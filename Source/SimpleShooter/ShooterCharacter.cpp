@@ -2,7 +2,6 @@
 
 
 #include "ShooterCharacter.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -58,13 +57,13 @@ void AShooterCharacter::MoveRight(float AxisValue)
 
 void AShooterCharacter::LookUpRate(float AxisValue)
 {
-	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
+	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	AddControllerPitchInput(AxisValue * RotationRate * DeltaTime);
 }
 
 
 void AShooterCharacter::LookRightRate(float AxisValue)
 {
-	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
+	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	AddControllerYawInput(AxisValue * RotationRate * DeltaTime);
 }
