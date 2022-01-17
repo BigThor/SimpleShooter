@@ -2,6 +2,7 @@
 
 
 #include "ShooterCharacter.h"
+#include "Gun.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -15,14 +16,24 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Health = MaxHealth;
+
+	// Hide bone gun
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
 	
+	if (GunClass)
+	{
+		Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+		Gun->SetOwner(this);
+	}
 }
 
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -42,6 +53,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &AShooterCharacter::Shoot);
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
@@ -66,4 +78,28 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 {
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	AddControllerYawInput(AxisValue * RotationRate * DeltaTime);
+}
+
+void AShooterCharacter::Shoot()
+{
+	if (Gun)
+	{
+		Gun->PullTrigger();
+	}
+}
+
+float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float DamageApplied = FMath::Min(Health, DamageToApply);
+	Health -= DamageApplied;
+
+	UE_LOG(LogTemp, Warning, TEXT("Health left: %f"), Health);
+
+	return DamageApplied;
+}
+
+bool AShooterCharacter::IsDead() const
+{
+	return Health <= 0;
 }

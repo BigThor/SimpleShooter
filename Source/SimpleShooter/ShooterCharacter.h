@@ -26,6 +26,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
+
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
+
 private:
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
@@ -33,7 +38,19 @@ private:
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 
+	void Shoot();
+
 private:
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10.f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class AGun> GunClass;
+
+	UPROPERTY(VisibleAnywhere)
+	class AGun* Gun;
+
+	UPROPERTY(EditAnywhere)
+	float MaxHealth = 100.f;
+	float Health;
 };
