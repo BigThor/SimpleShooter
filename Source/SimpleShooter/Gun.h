@@ -26,6 +26,10 @@ public:
 	void PullTrigger();
 
 private:
+	bool GunTrace(FHitResult &Hit, FVector &ShotDirection);
+	AController* GetOwnerController() const;
+
+private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
 
@@ -36,7 +40,13 @@ private:
  	class UParticleSystem* MuzzleFlashParticles;
 
 	UPROPERTY(EditAnywhere, Category = "Components")
+	class USoundBase* MuzzleSound;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
 	class UParticleSystem* ImpactParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	class USoundBase* ImpactSound;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float MaxRange = 2000.f;
