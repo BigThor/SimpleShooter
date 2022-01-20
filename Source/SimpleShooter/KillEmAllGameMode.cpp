@@ -4,18 +4,32 @@
 #include "KillEmAllGameMode.h"
 #include "EngineUtils.h"
 #include "GameFramework/Controller.h"
+#include "ShooterAIController.h"
 
 void AKillEmAllGameMode::PawnKilled(APawn* PawnKilled)
 {
 	Super::PawnKilled(PawnKilled);
 
-	UE_LOG(LogTemp, Warning, TEXT("A pawn was killed!"));
-
 	APlayerController* PlayerController = Cast<APlayerController>(PawnKilled->Controller);
+
+	// Pawn that died was the player
 	if (PlayerController)
 	{
 		EndGame(false);
+		return;
 	}
+
+	// Pawn that died was an AI
+	for (AShooterAIController* CurrentController : TActorRange<AShooterAIController>(GetWorld()))
+	{
+		if (!CurrentController->IsDead())
+		{
+			return;
+		}
+	}
+
+	// There is no more enemies alive
+	EndGame(true);
 }
 
 void AKillEmAllGameMode::EndGame(bool bIsPlayerWinner)
