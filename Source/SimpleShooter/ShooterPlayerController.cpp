@@ -5,9 +5,25 @@
 #include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 
+void AShooterPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (PlayerHUDClass)
+	{
+		PlayerHUD = CreateWidget(this, PlayerHUDClass, TEXT("Player HUD"));
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddToViewport();
+		}
+	}
+}
+
 void AShooterPlayerController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinner)
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
+
+	PlayerHUD->RemoveFromViewport();
 
 	if (bIsWinner)
 	{

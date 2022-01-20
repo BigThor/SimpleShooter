@@ -30,7 +30,11 @@ public:
 	void Shoot();
 
 	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
+
+	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
+
 
 private:
 	void MoveForward(float AxisValue);

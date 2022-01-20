@@ -113,6 +113,13 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	return DamageApplied;
 }
 
+
+
+float AShooterCharacter::GetHealthPercent() const
+{
+	return Health / MaxHealth;
+}
+
 bool AShooterCharacter::IsDead() const
 {
 	return Health <= 0;

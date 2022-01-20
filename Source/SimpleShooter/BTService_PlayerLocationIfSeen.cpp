@@ -9,7 +9,7 @@
 
 UBTService_PlayerLocationIfSeen::UBTService_PlayerLocationIfSeen()
 {
-	NodeName = TEXT("Update Player Location If Seen");
+	NodeName = TEXT("Update Player If Seen");
 }
 
 void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -25,9 +25,9 @@ void UBTService_PlayerLocationIfSeen::TickNode(UBehaviorTreeComponent& OwnerComp
 	}
 
 	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
-	if ( AIController->LineOfSightTo(PlayerPawn))
+	if (AIController->LineOfSightTo(PlayerPawn))
 	{
-		Blackboard->SetValueAsVector(GetSelectedBlackboardKey(), PlayerPawn->GetActorLocation());
+		Blackboard->SetValueAsObject(GetSelectedBlackboardKey(), PlayerPawn);
 	}
 	else
 	{
