@@ -24,11 +24,23 @@ void AShooterCharacter::BeginPlay()
 	// Hide bone gun
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
 	
-	if (GunClass)
+	for (int IndexGunClass = 0; IndexGunClass < GunClassArray.Num(); IndexGunClass++)
 	{
-		Gun = GetWorld()->SpawnActor<AGun>(GunClass);
-		Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-		Gun->SetOwner(this);
+		TSubclassOf<AGun> GunClass = GunClassArray[IndexGunClass];
+
+		AGun* NewGun = GetWorld()->SpawnActor<AGun>(GunClass);
+		NewGun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+		NewGun->SetOwner(this);
+		GunArray.Add(NewGun);
+
+		if (IndexGunClass == iCurrentGun)
+		{
+			ShowCurrentWeapon();
+		}
+		else
+		{
+			HideWeapon(IndexGunClass);
+		}
 	}
 }
 
@@ -56,6 +68,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &AShooterCharacter::Shoot);
+
+	PlayerInputComponent->BindAction(TEXT("NextWeapon"), IE_Pressed, this, &AShooterCharacter::NextWeapon);
+	PlayerInputComponent->BindAction(TEXT("PrevWeapon"), IE_Pressed, this, &AShooterCharacter::PreviousWeapon);
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
@@ -84,11 +99,51 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 
 void AShooterCharacter::Shoot()
 {
-	if (Gun)
+	if (GunArray.Num() > 0 && iCurrentGun < GunArray.Num())
 	{
-		Gun->PullTrigger();
+		GunArray[iCurrentGun]->PullTrigger();
 	}
 }
+
+void AShooterCharacter::PreviousWeapon()
+{
+	if (GunArray.Num() < 2)
+		return;
+
+	HideWeapon(iCurrentGun);
+	iCurrentGun = (iCurrentGun + GunArray.Num() -1) % GunArray.Num();
+	ShowCurrentWeapon();
+}
+
+void AShooterCharacter::NextWeapon()
+{
+	if (GunArray.Num() < 2)
+		return;
+
+	HideWeapon(iCurrentGun);
+	iCurrentGun = (iCurrentGun + GunArray.Num() - 1) % GunArray.Num();
+	ShowCurrentWeapon();
+}
+
+void AShooterCharacter::ShowCurrentWeapon()
+{
+	if (GunArray.Num() > 0 && iCurrentGun < GunArray.Num())
+	{
+		GunArray[iCurrentGun]->SetActorHiddenInGame(false);
+		GunArray[iCurrentGun]->SetActorEnableCollision(true);
+	}
+}
+
+void AShooterCharacter::HideWeapon(int GunIndex)
+{
+	if (GunArray.Num() > 0 && GunIndex < GunArray.Num())
+	{
+		GunArray[GunIndex]->SetActorHiddenInGame(true);
+		GunArray[GunIndex]->SetActorEnableCollision(false);
+	}
+}
+
+
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {

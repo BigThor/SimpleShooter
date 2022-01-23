@@ -43,15 +43,21 @@ private:
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 
+	void PreviousWeapon();
+	void NextWeapon();
+	void ShowCurrentWeapon();
+	void HideWeapon(int GunIndex);
+
 private:
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10.f;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class AGun> GunClass;
+	TArray< TSubclassOf<class AGun> > GunClassArray;
 
 	UPROPERTY(VisibleAnywhere)
-	class AGun* Gun;
+	TArray<class AGun*> GunArray;
+	int iCurrentGun = 0;
 
 	UPROPERTY(EditAnywhere)
 	float MaxHealth = 100.f;
