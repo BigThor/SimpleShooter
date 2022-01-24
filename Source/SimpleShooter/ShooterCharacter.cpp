@@ -5,6 +5,8 @@
 #include "Gun.h"
 #include "Components/CapsuleComponent.h"
 #include "SimpleShooterGameModeBase.h"
+#include "Blueprint/UserWidget.h"
+#include "ShooterPlayerController.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -20,6 +22,7 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	Health = MaxHealth;
+	IsReloading = false;
 
 	// Hide bone gun
 	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
@@ -42,6 +45,7 @@ void AShooterCharacter::BeginPlay()
 			HideWeapon(IndexGunClass);
 		}
 	}
+
 }
 
 // Called every frame
@@ -68,6 +72,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &AShooterCharacter::Shoot);
+	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &AShooterCharacter::StartReload);
 
 	PlayerInputComponent->BindAction(TEXT("NextWeapon"), IE_Pressed, this, &AShooterCharacter::NextWeapon);
 	PlayerInputComponent->BindAction(TEXT("PrevWeapon"), IE_Pressed, this, &AShooterCharacter::PreviousWeapon);
@@ -99,15 +104,65 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 
 void AShooterCharacter::Shoot()
 {
-	if (GunArray.Num() > 0 && iCurrentGun < GunArray.Num())
+	if (IsIndexGunValid(iCurrentGun) && !IsReloading)
 	{
 		GunArray[iCurrentGun]->PullTrigger();
 	}
 }
 
+void AShooterCharacter::StartReload()
+{
+	if (IsIndexGunValid(iCurrentGun) && !IsReloading)
+	{
+		IsReloading = true;
+
+		GetWorld()->GetTimerManager().SetTimer(
+			ReloadTimer,
+			this, 
+			&AShooterCharacter::FinishReload, 
+			GunArray[iCurrentGun]->GetReloadSeconds()
+		);
+		
+		/*if (Controller && Controller->IsA<AShooterPlayerController>())
+		{
+			AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Controller);
+			PlayerController->ShowReloadingHUD();
+		}*/
+	}
+}
+
+void AShooterCharacter::FinishReload()
+{
+	if (IsIndexGunValid(iCurrentGun) && IsReloading)
+	{
+		IsReloading = false;
+		GunArray[iCurrentGun]->Reload();
+
+		/*if (Controller && Controller->IsA<AShooterPlayerController>())
+		{
+			AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Controller);
+			PlayerController->HideReloadingHUD();
+		}*/
+	}
+}
+
+int AShooterCharacter::GetAmmoLeft() const
+{
+	if (IsIndexGunValid(iCurrentGun))
+	{
+		return GunArray[iCurrentGun]->GetCurrentAmmo();
+	}
+	return -1;
+}
+
+bool AShooterCharacter::CanSwitchWeapon() const
+{
+	return GunArray.Num() > 1 && !IsReloading;
+}
+
 void AShooterCharacter::PreviousWeapon()
 {
-	if (GunArray.Num() < 2)
+	if (!CanSwitchWeapon())
 		return;
 
 	HideWeapon(iCurrentGun);
@@ -117,7 +172,7 @@ void AShooterCharacter::PreviousWeapon()
 
 void AShooterCharacter::NextWeapon()
 {
-	if (GunArray.Num() < 2)
+	if (!CanSwitchWeapon())
 		return;
 
 	HideWeapon(iCurrentGun);
@@ -127,7 +182,7 @@ void AShooterCharacter::NextWeapon()
 
 void AShooterCharacter::ShowCurrentWeapon()
 {
-	if (GunArray.Num() > 0 && iCurrentGun < GunArray.Num())
+	if (IsIndexGunValid(iCurrentGun))
 	{
 		GunArray[iCurrentGun]->SetActorHiddenInGame(false);
 		GunArray[iCurrentGun]->SetActorEnableCollision(true);
@@ -136,13 +191,17 @@ void AShooterCharacter::ShowCurrentWeapon()
 
 void AShooterCharacter::HideWeapon(int GunIndex)
 {
-	if (GunArray.Num() > 0 && GunIndex < GunArray.Num())
+	if (IsIndexGunValid(GunIndex))
 	{
 		GunArray[GunIndex]->SetActorHiddenInGame(true);
 		GunArray[GunIndex]->SetActorEnableCollision(false);
 	}
 }
 
+bool AShooterCharacter::IsIndexGunValid(int GunIndex) const
+{
+	return GunArray.Num() > 0 && GunIndex < GunArray.Num();
+}
 
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -173,6 +232,18 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 float AShooterCharacter::GetHealthPercent() const
 {
 	return Health / MaxHealth;
+}
+
+FString AShooterCharacter::GetAmmoString() const
+{
+	if (IsIndexGunValid(iCurrentGun))
+	{
+		int CurrentAmmo = GunArray[iCurrentGun]->GetCurrentAmmo();
+		int MaxAmmo = GunArray[iCurrentGun]->GetMaxAmmo();
+		FString AmmoString = FString::FromInt(CurrentAmmo) + FString(" / ") + FString::FromInt(MaxAmmo);
+		return AmmoString;
+	}
+	return FString("");
 }
 
 bool AShooterCharacter::IsDead() const

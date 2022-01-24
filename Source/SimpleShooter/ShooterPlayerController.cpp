@@ -17,6 +17,10 @@ void AShooterPlayerController::BeginPlay()
 			PlayerHUD->AddToViewport();
 		}
 	}
+	if (ReloadHUDClass)
+	{
+		ReloadHUD = CreateWidget(this, ReloadHUDClass, TEXT("Reload HUD"));
+	}
 }
 
 void AShooterPlayerController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinner)
@@ -43,4 +47,20 @@ void AShooterPlayerController::GameHasEnded(class AActor* EndGameFocus, bool bIs
 	}
 
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
+}
+
+void AShooterPlayerController::ShowReloadingHUD()
+{
+	if (ReloadHUD)
+	{
+		ReloadHUD->AddToViewport();
+	}
+}
+
+void AShooterPlayerController::HideReloadingHUD()
+{
+	if (ReloadHUD)
+	{
+		ReloadHUD->RemoveFromViewport();
+	}
 }

@@ -24,7 +24,7 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
+	CurrentAmmo = MaxAmmo;
 }
 
 // Called every frame
@@ -36,6 +36,13 @@ void AGun::Tick(float DeltaTime)
 
 void AGun::PullTrigger()
 {
+	if (CurrentAmmo < 1)
+	{
+		return;
+	}
+
+	CurrentAmmo--;
+
 	if (MuzzleFlashParticles)
 	{
 		UGameplayStatics::SpawnEmitterAttached(MuzzleFlashParticles, MeshGun, TEXT("MuzzleFlashSocket"));
@@ -75,7 +82,26 @@ void AGun::PullTrigger()
 		FPointDamageEvent DamageEvent(Damage, HitResult, -ShotDirection, nullptr);
 		HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 	}
+}
 
+void AGun::Reload()
+{
+	CurrentAmmo = MaxAmmo;
+}
+
+int AGun::GetMaxAmmo()
+{
+	return MaxAmmo;
+}
+
+int AGun::GetCurrentAmmo()
+{
+	return CurrentAmmo;
+}
+
+float AGun::GetReloadSeconds()
+{
+	return ReloadSeconds;
 }
 
 bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)

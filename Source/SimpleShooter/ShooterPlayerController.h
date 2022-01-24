@@ -21,11 +21,17 @@ protected:
 
 public:
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
+	void ShowReloadingHUD();
+	void HideReloadingHUD();
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> PlayerHUDClass;
 	UUserWidget* PlayerHUD;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> ReloadHUDClass;
+	UUserWidget* ReloadHUD;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> LoseScreenClass;

@@ -24,6 +24,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void PullTrigger();
+	void Reload();
+
+	int GetMaxAmmo();
+	int GetCurrentAmmo();
+	float GetReloadSeconds();
 
 private:
 	bool GunTrace(FHitResult &Hit, FVector &ShotDirection);
@@ -53,4 +58,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float Damage = 10.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	int MaxAmmo = 16;
+	int CurrentAmmo = 0;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ReloadSeconds = 2.f;
 };

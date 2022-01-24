@@ -28,25 +28,36 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser);
 	void Shoot();
+	void StartReload();
+	int GetAmmoLeft() const;
 
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
+
+	UFUNCTION(BlueprintPure)
+	FString GetAmmoString() const;
 
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
 
 private:
+	void FinishReload();
+
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
 
 	void LookUpRate(float AxisValue);
 	void LookRightRate(float AxisValue);
 
+	bool CanSwitchWeapon() const;
+
 	void PreviousWeapon();
 	void NextWeapon();
 	void ShowCurrentWeapon();
 	void HideWeapon(int GunIndex);
+
+	bool IsIndexGunValid(int GunIndex) const;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -62,4 +73,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float MaxHealth = 100.f;
 	float Health;
+
+	FTimerHandle ReloadTimer;
+	bool IsReloading;
 };
