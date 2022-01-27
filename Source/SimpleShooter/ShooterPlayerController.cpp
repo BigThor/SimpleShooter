@@ -21,6 +21,10 @@ void AShooterPlayerController::BeginPlay()
 	{
 		ReloadHUD = CreateWidget(this, ReloadHUDClass, TEXT("Reload HUD"));
 	}
+	if (ReloadHUDClass)
+	{
+		PauseMenu = CreateWidget(this, PauseMenuClass, TEXT("Pause Menu"));
+	}
 }
 
 void AShooterPlayerController::GameHasEnded(class AActor* EndGameFocus, bool bIsWinner)
@@ -62,5 +66,13 @@ void AShooterPlayerController::HideReloadingHUD()
 	if (ReloadHUD)
 	{
 		ReloadHUD->RemoveFromViewport();
+	}
+}
+
+void AShooterPlayerController::ShowPauseMenu()
+{
+	if (PauseMenu)
+	{
+		PauseMenu->AddToViewport();
 	}
 }

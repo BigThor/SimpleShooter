@@ -57,7 +57,9 @@ private:
 	void ShowCurrentWeapon();
 	void HideWeapon(int GunIndex);
 
+	bool IsControllerAShooterPlayerController() const;
 	bool IsIndexGunValid(int GunIndex) const;
+	void Pause();
 
 private:
 	UPROPERTY(EditAnywhere)

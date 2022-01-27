@@ -23,14 +23,22 @@ public:
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 	void ShowReloadingHUD();
 	void HideReloadingHUD();
+	void ShowPauseMenu();
 
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> PlayerHUDClass;
+	UPROPERTY()
 	UUserWidget* PlayerHUD;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> PauseMenuClass;
+	UPROPERTY()
+	UUserWidget* PauseMenu;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> ReloadHUDClass;
+	UPROPERTY()
 	UUserWidget* ReloadHUD;
 
 	UPROPERTY(EditAnywhere)

@@ -74,8 +74,10 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction(TEXT("Shoot"), IE_Pressed, this, &AShooterCharacter::Shoot);
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &AShooterCharacter::StartReload);
 
-	PlayerInputComponent->BindAction(TEXT("NextWeapon"), IE_Pressed, this, &AShooterCharacter::NextWeapon);
 	PlayerInputComponent->BindAction(TEXT("PrevWeapon"), IE_Pressed, this, &AShooterCharacter::PreviousWeapon);
+	PlayerInputComponent->BindAction(TEXT("NextWeapon"), IE_Pressed, this, &AShooterCharacter::NextWeapon);
+
+	PlayerInputComponent->BindAction(TEXT("Pause"), IE_Pressed, this, &AShooterCharacter::Pause);
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)
@@ -123,11 +125,11 @@ void AShooterCharacter::StartReload()
 			GunArray[iCurrentGun]->GetReloadSeconds()
 		);
 		
-		/*if (Controller && Controller->IsA<AShooterPlayerController>())
+		if (IsControllerAShooterPlayerController())
 		{
 			AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Controller);
 			PlayerController->ShowReloadingHUD();
-		}*/
+		}
 	}
 }
 
@@ -138,11 +140,11 @@ void AShooterCharacter::FinishReload()
 		IsReloading = false;
 		GunArray[iCurrentGun]->Reload();
 
-		/*if (Controller && Controller->IsA<AShooterPlayerController>())
+		if (IsControllerAShooterPlayerController())
 		{
 			AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Controller);
 			PlayerController->HideReloadingHUD();
-		}*/
+		}
 	}
 }
 
@@ -198,11 +200,26 @@ void AShooterCharacter::HideWeapon(int GunIndex)
 	}
 }
 
+
+bool AShooterCharacter::IsControllerAShooterPlayerController() const
+{
+	return Controller && Controller->IsA<AShooterPlayerController>();
+}
+
 bool AShooterCharacter::IsIndexGunValid(int GunIndex) const
 {
 	return GunArray.Num() > 0 && GunIndex < GunArray.Num();
 }
 
+void AShooterCharacter::Pause()
+{
+	if (IsControllerAShooterPlayerController())
+	{
+		AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Controller);
+		PlayerController->ShowPauseMenu();
+		PlayerController->SetPause(true);
+	}
+}
 
 float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
