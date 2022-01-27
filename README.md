@@ -16,6 +16,7 @@ This is a game I made following the course:
 - Win / Lose Conditions
 - Weapon switching
 - Ammo
+- Basic UI
 
 ## The game
 
@@ -30,3 +31,11 @@ Controls for the keyboard are:
 - Left mouse click for Shooting
 - Mouse wheel for Weapon switching
 - R for Reload
+
+### Credits
+All assets where provided by the course, but here are the links I could find.
+
+[Modular SciFi Season 1 Starter Bundle](https://www.unrealengine.com/marketplace/en-US/product/modular-scifi-season-1-starter-bundle) by Jonathon Frederick
+
+[Paragon: Wraith](https://www.unrealengine.com/marketplace/en-US/product/paragon-wraith) by Epic Games
+
