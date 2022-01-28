@@ -8,6 +8,9 @@ This is a game I made following the course:
 Click to open it (or right click to open in a new page)
 [![Simple Shooter Video](/SimpleShooterVideoSS.png)](https://youtu.be/r-SOErM50nY "Simple Shooter")
 
+## Where to download
+
+[Itchio Game's Page](https://big-thor.itch.io/simple-shooter)
 
 ### Subjects covered in this project:
 - Player movement
