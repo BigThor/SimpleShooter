@@ -5,7 +5,7 @@ This is a game I made following the course:
 
 ## Video
 
-[![IMAGE ALT TEXT]("SimpleShooterVideoSS.png")](https://youtu.be/r-SOErM50nY "Simple Shooter")
+[![Simple Shooter Video]("./SimpleShooterVideoSS.png")](https://youtu.be/r-SOErM50nY "Simple Shooter")
 
 
 ### Subjects covered in this project:
